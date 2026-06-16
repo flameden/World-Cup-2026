@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mundial 2026 — Apuestas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #21262d;
+  --surface3: #30363d;
+  --border: rgba(240,246,252,.1);
+  --border2: rgba(240,246,252,.18);
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --gold: #d4a017;
+  --gold-soft: rgba(212,160,23,.12);
+  --green: #3fb950;
+  --green-soft: rgba(63,185,80,.12);
+  --red: #f85149;
+  --red-soft: rgba(248,81,73,.1);
+  --blue: #58a6ff;
+  --blue-soft: rgba(88,166,255,.1);
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo span { color: var(--gold); }
+.header-badge {
+  font-size: 11px;
+  background: var(--gold-soft);
+  color: var(--gold);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  border: 1px solid rgba(212,160,23,.25);
+}
+
+/* ── Layout ── */
+.container { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  padding: 4px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+.tab {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--text); }
+.tab.active {
+  background: var(--surface3);
+  color: var(--text);
+  font-weight: 500;
+}
+.tab .ti { font-size: 15px; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.card-title {
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+/* ── Form controls ── */
+.input-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+input[type="text"],
+input[type="number"],
+select {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 7px 11px;
+  outline: none;
+  transition: border-color .15s;
+  min-width: 0;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus { border-color: var(--blue); }
+select option { background: #21262d; }
+input[type="number"] { width: 60px; text-align: center; }
+input[type="text"] { flex: 1; }
+
+button {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 7px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+}
+button:hover { background: var(--surface3); border-color: var(--border2); }
+button.btn-primary {
+  background: var(--gold-soft);
+  border-color: rgba(212,160,23,.35);
+  color: var(--gold);
+  font-weight: 500;
+}
+button.btn-primary:hover { background: rgba(212,160,23,.2); }
+button.btn-danger { color: var(--red); }
+button.btn-danger:hover { background: var(--red-soft); border-color: rgba(248,81,73,.3); }
+button.btn-success {
+  background: var(--green-soft);
+  border-color: rgba(63,185,80,.3);
+  color: var(--green);
+  font-weight: 500;
+}
+button.btn-success:hover { background: rgba(63,185,80,.2); }
+
+/* ── Player chips ── */
+.chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  background: var(--surface2);
+  color: var(--text);
+}
+.chip button { all: unset; cursor: pointer; color: var(--text3); line-height: 1; font-size: 15px; margin-left: 2px; }
+.chip button:hover { color: var(--red); }
+
+/* ── Phase badge ── */
+.phase-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  border: 1px solid rgba(88,166,255,.2);
+  letter-spacing: .03em;
+}
+
+/* ── Match cards ── */
+.match-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+.match-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.match-teams {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 6px;
+  letter-spacing: -.01em;
+}
+.vs { color: var(--text3); font-size: 13px; margin: 0 6px; }
+.match-date { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ── Result area ── */
+.result-final {
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 500;
+  background: var(--green-soft);
+  border: 1px solid rgba(63,185,80,.2);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Predictions grid ── */
+.pred-grid { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.pred-row { display: flex; align-items: center; gap: 8px; }
+.pred-name { width: 110px; font-size: 12px; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pred-score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pred-sep { color: var(--text3); font-size: 12px; }
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: .03em;
+}
+.badge-exact { background: var(--gold-soft); color: var(--gold); border: 1px solid rgba(212,160,23,.3); }
+.badge-result { background: var(--green-soft); color: var(--green); border: 1px solid rgba(63,185,80,.25); }
+.badge-miss { background: var(--red-soft); color: var(--red); border: 1px solid rgba(248,81,73,.2); }
+.badge-pending { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+
+/* ── Score board ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-align: center;
+}
+.metric-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: var(--text); }
+
+.score-list { display: flex; flex-direction: column; gap: 8px; }
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  transition: border-color .15s;
+}
+.score-row:hover { border-color: var(--border2); }
+.score-row.leader { border-color: rgba(212,160,23,.35); background: rgba(212,160,23,.04); }
+.rank {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.score-name { flex: 1; font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.score-detail { font-size: 11px; color: var(--text3); text-align: right; line-height: 1.5; }
+.score-pts {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 44px;
+  text-align: right;
+}
+.pts-label { font-size: 10px; color: var(--text3); text-align: right; }
+
+/* ── Empty states ── */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text3);
+  font-size: 13px;
+}
+.empty .ti { font-size: 36px; display: block; margin-bottom: 10px; }
+
+/* ── Filter row ── */
+.filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-row select { font-size: 12px; padding: 5px 9px; }
+
+/* ── Help text ── */
+.help { font-size: 12px; color: var(--text3); margin-top: 8px; padding: 0 2px; }
+.help b { color: var(--text2); font-weight: 500; }
+
+/* ── Points rule strip ── */
+.rules-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.rule-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+  color: var(--text2);
+}
+.rule-pts {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+}
+.rule-pts.gold { color: var(--gold); }
+.rule-pts.green { color: var(--green); }
+.rule-pts.red { color: var(--red); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .tab span.label { display: none; }
+  .header { padding: 0 14px; }
+  .container { padding: 16px 12px; }
+  .match-teams { font-size: 14px; }
+  .pred-name { width: 80px; font-size: 11px; }
+  .score-detail { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">⚽ Mundial <span>2026</span></div>
+  <div class="header-badge">USA · CAN · MEX</div>
+</header>
+
+<div class="container">
+
+  <div class="rules-strip">
+    <div class="rule-pill"><span class="rule-pts gold">+3</span> Marcador exacto</div>
+    <div class="rule-pill"><span class="rule-pts green">+1</span> Resultado correcto</div>
+    <div class="rule-pill"><span class="rule-pts red">+0</span> Resultado incorrecto</div>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" onclick="showTab('jugadores', this)" role="tab">
+      <i class="ti ti-users"></i><span class="label">Participantes</span>
+    </button>
+    <button class="tab" onclick="showTab('partidos', this)" role="tab">
+      <i class="ti ti-ball-football"></i><span class="label">Partidos</span>
+    </button>
+    <button class="tab" onclick="showTab('pronosticos', this)" role="tab">
+      <i class="ti ti-pencil"></i><span class="label">Pronósticos</span>
+    </button>
+    <button class="tab" onclick="showTab('marcador', this)" role="tab">
+      <i class="ti ti-trophy"></i><span class="label">Marcador</span>
+    </button>
+  </nav>
+
+  <!-- ══ PARTICIPANTES ══ -->
+  <div id="tab-jugadores" class="section active">
+    <div class="card">
+      <div class="card-title">Nuevo participante</div>
+      <div class="input-row">
+        <input type="text" id="nuevo-jugador" placeholder="Nombre" maxlength="30" />
+        <button class="btn-primary" onclick="agregarJugador()"><i class="ti ti-plus"></i> Agregar</button>
+      </div>
+      <div id="lista-jugadores"></div>
+    </div>
+    <p class="help">Agrega a todos los que van a participar. Necesitas al menos 1 para registrar pronósticos.</p>
+  </div>
+
+  <!-- ══ PARTIDOS ══ -->
+  <div id="tab-partidos" class="section">
+    <div class="card">
+      <div class="card-title">Nuevo partido</div>
+      <div class="input-row">
+        <input type="text" id="equipo1" placeholder="Equipo local" />
+        <input type="text" id="equipo2" placeholder="Equipo visitante" />
+      </div>
+      <div class="input-row">
+        <select id="fase-partido">
+          <option>Fase de grupos</option>
+          <option>Octavos de final</option>
+          <option>Cuartos de final</option>
+          <option>Semifinal</option>
+          <option>Tercer lugar</option>
+          <option>Final</option>
+        </select>
+        <input type="text" id="fecha-partido" placeholder="Fecha (ej: 12 Jun)" style="width:160px;flex:none;" />
+        <button class="btn-primary" onclick="agregarPartido()"><i class="ti ti-plus"></i> Agregar</button>
+      </div>
+    </div>
+    <div id="lista-partidos"></div>
+  </div>
+
+  <!-- ══ PRONÓSTICOS ══ -->
+  <div id="tab-pronosticos" class="section">
+    <div class="filter-row">
+      <select id="filtro-fase" onchange="renderPronosticos()">
+        <option value="">Todas las fases</option>
+        <option>Fase de grupos</option>
+        <option>Octavos de final</option>
+        <option>Cuartos de final</option>
+        <option>Semifinal</option>
+        <option>Tercer lugar</option>
+        <option>Final</option>
+      </select>
+    </div>
+    <div id="lista-pronosticos"></div>
+  </div>
+
+  <!-- ══ MARCADOR ══ -->
+  <div id="tab-marcador" class="section">
+    <div id="metrics-row" class="metrics"></div>
+    <div id="score-list-wrap" class="score-list"></div>
+  </div>
+
+</div>
+
+<script>
+let state = { jugadores: [], partidos: [], pronosticos: {}, resultados: {} };
+
+(function load() {
+  try { const d = localStorage.getItem('mundial26_v2'); if (d) state = JSON.parse(d); } catch(e) {}
+})();
+
+function save() { try { localStorage.setItem('mundial26_v2', JSON.stringify(state)); } catch(e) {} }
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function h(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Tabs ── */
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name==='pronosticos') renderPronosticos();
+  if (name==='marcador') renderMarcador();
+}
+
+/* ── Jugadores ── */
+function agregarJugador() {
+  const inp = document.getElementById('nuevo-jugador');
+  const nombre = inp.value.trim();
+  if (!nombre) return;
+  if (state.jugadores.find(j => j.nombre.toLowerCase()===nombre.toLowerCase())) {
+    alert('Ya existe un participante con ese nombre.');
+    return;
+  }
+  state.jugadores.push({ id: uid(), nombre });
+  inp.value = '';
+  save();
+  renderJugadores();
+}
+
+function eliminarJugador(id) {
+  if (!confirm('¿Eliminar este participante y todos sus pronósticos?')) return;
+  state.jugadores = state.jugadores.filter(j => j.id!==id);
+  Object.keys(state.pronosticos).forEach(pid => { delete state.pronosticos[pid][id]; });
+  save(); renderJugadores();
+}
+
+function renderJugadores() {
+  const el = document.getElementById('lista-jugadores');
+  if (!state.jugadores.length) {
+    el.innerHTML = '<p style="color:var(--text3);font-size:13px;margin-top:6px;">Sin participantes todavía.</p>';
+    return;
+  }
+  el.innerHTML = '<div class="chips-wrap">' +
+    state.jugadores.map(j => `
+      <span class="chip">
+        <i class="ti ti-user" style="font-size:13px;color:var(--text3);" aria-hidden="true"></i>
+        ${h(j.nombre)}
+        <button onclick="eliminarJugador('${j.id}')" title="Eliminar">×</button>
+      </span>`).join('') +
+    '</div>';
+}
+
+/* ── Partidos ── */
+function agregarPartido() {
+  const e1 = document.getElementById('equipo1').value.trim();
+  const e2 = document.getElementById('equipo2').value.trim();
+  const fase = document.getElementById('fase-partido').value;
+  const fecha = document.getElementById('fecha-partido').value.trim();
+  if (!e1 || !e2) { alert('Ingresa el nombre de ambos equipos.'); return; }
+  state.partidos.push({ id: uid(), equipo1: e1, equipo2: e2, fase, fecha });
+  document.getElementById('equipo1').value = '';
+  document.getElementById('equipo2').value = '';
+  document.getElementById('fecha-partido').value = '';
+  save(); renderPartidos();
+}
+
+function eliminarPartido(id) {
+  if (!confirm('¿Eliminar este partido y todos sus pronósticos?')) return;
+  state.partidos = state.partidos.filter(p => p.id!==id);
+  delete state.resultados[id];
+  delete state.pronosticos[id];
+  save(); renderPartidos();
+}
+
+function guardarResultado(id) {
+  const g1 = document.getElementById('rg1-'+id).value;
+  const g2 = document.getElementById('rg2-'+id).value;
+  if (g1==='' || g2==='') { alert('Ingresa el marcador final.'); return; }
+  state.resultados[id] = { goles1: parseInt(g1), goles2: parseInt(g2) };
+  save(); renderPartidos();
+}
+
+function editarResultado(id) {
+  delete state.resultados[id];
+  save(); renderPartidos();
+}
+
+function renderPartidos() {
+  const el = document.getElementById('lista-partidos');
+  if (!state.partidos.length) {
+    el.innerHTML = '<div class="empty"><i class="ti ti-ball-football"></i>No hay partidos. ¡Agrega el primero!</div>';
+    return;
+  }
+  el.innerHTML = state.partidos.map(p => {
+    const r = state.resultados[p.id];
+    const done = r !== undefined;
+    const resultHtml = done
+      ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="result-final"><i class="ti ti-check" style="font-size:13px;"></i> ${h(p.equipo1)} ${r.goles1} — ${r.goles2} ${h(p.equipo2)}</span>
+          <button class="btn-danger" onclick="editarResultado('${p.id}')" style="font-size:11px;padding:4px 9px;">editar</button>
+         </div>`
+      : `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <span style="font-size:12px;color:var(--text3);">Resultado final:</span>
+          <input type="number" id="rg1-${p.id}" min="0" max="99" placeholder="${h(p.equipo1.slice(0,3))}" />
+          <span style="color:var(--text3);font-size:13px;">—</span>
+          <input type="number" id="rg2-${p.id}" min="0" max="99" placeholder="${h(p.equipo2.slice(0,3))}" />
+          <button class="btn-success" onclick="guardarResultado('${p.id}')"><i class="ti ti-check"></i> Guardar</button>
+         </div>`;
+    return `<div class="match-card">
+      <div class="match-top">
+        <div>
+          <span class="phase-pill">${h(p.fase)}</span>
+          ${p.fecha ? `<span class="match-date" style="display:inline-block;margin-left:8px;">${h(p.fecha)}</span>` : ''}
+          <div class="match-teams">${h(p.equipo1)}<span class="vs">vs</span>${h(p.equipo2)}</div>
+        </div>
+        <button class="btn-danger" onclick="eliminarPartido('${p.id}')" style="font-size:11px;padding:4px 9px;"><i class="ti ti-trash"></i></button>
+      </div>
+      ${resultHtml}
+    </div>`;
+  }).join('');
+}
+
+/* ── Pronósticos ── */
+function savePred(pid, jid, field, val) {
+  if (!state.pronosticos[pid]) state.pronosticos[pid] = {};
+  if (!state.pronosticos[pid][jid]) state.pronosticos[pid][jid] = {};
+  state.pronosticos[pid][jid][field] = parseInt(val) || 0;
+  save();
+}
+
+function renderPronosticos() {
+  const el = document.getElementById('lista-pronosticos');
+  if (!state.jugadores.length || !state.partidos.length) {
+    el.innerHTML = '<div class="empty"><i class="ti ti-pencil"></i>Primero agrega participantes y partidos.</div>';
+    return;
+  }
+  const fase = document.getElementById('filtro-fase').value;
+  const partidos = fase ? state.partidos.filter(p => p.fase===fase) : state.partidos;
+  if (!partidos.length) {
+    el.innerHTML = '<div class="empty"><i class="ti ti-filter"></i>No hay partidos en esta fase.</div>';
+    return;
+  }
+  el.innerHTML = partidos.map(p => {
+    const r = state.resultados[p.id];
+    const statusHtml = r !== undefined
+      ? `<span class="result-final" style="font-size:11px;"><i class="ti ti-check" style="font-size:12px;"></i> ${r.goles1}—${r.goles2}</span>`
+      : `<span class="badge badge-pending">Pendiente</span>`;
+
+    const predRows = state.jugadores.map(j => {
+      const pred = (state.pronosticos[p.id]||{})[j.id]||{};
+      const g1 = pred.g1 !== undefined ? pred.g1 : '';
+      const g2 = pred.g2 !== undefined ? pred.g2 : '';
+      let badge = '';
+      if (r !== undefined && g1 !== '' && g2 !== '') {
+        const pg1=parseInt(g1), pg2=parseInt(g2);
+        if (pg1===r.goles1 && pg2===r.goles2) {
+          badge = '<span class="badge badge-exact">+3 exacto</span>';
+        } else {
+          const pw = pg1>pg2?1:pg1<pg2?2:0;
+          const rw = r.goles1>r.goles2?1:r.goles1<r.goles2?2:0;
+          badge = pw===rw
+            ? '<span class="badge badge-result">+1 resultado</span>'
+            : '<span class="badge badge-miss">+0</span>';
+        }
+      }
+      return `<div class="pred-row">
+        <span class="pred-name" title="${h(j.nombre)}">${h(j.nombre)}</span>
+        <div class="pred-score">
+          <input type="number" min="0" max="99" value="${g1}" placeholder="0"
+            onchange="savePred('${p.id}','${j.id}','g1',this.value)" />
+          <span class="pred-sep">—</span>
+          <input type="number" min="0" max="99" value="${g2}" placeholder="0"
+            onchange="savePred('${p.id}','${j.id}','g2',this.value)" />
+        </div>
+        ${badge}
+      </div>`;
+    }).join('');
+
+    return `<div class="match-card">
+      <div class="match-top">
+        <div>
+          <span class="phase-pill">${h(p.fase)}</span>
+          ${p.fecha ? `<span class="match-date" style="display:inline-block;margin-left:8px;">${h(p.fecha)}</span>` : ''}
+          <div class="match-teams">${h(p.equipo1)}<span class="vs">vs</span>${h(p.equipo2)}</div>
+        </div>
+        ${statusHtml}
+      </div>
+      <div class="pred-grid">${predRows}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Marcador ── */
+function calcPuntos(jid) {
+  let pts=0, exactos=0, resultados=0, total=0;
+  state.partidos.forEach(p => {
+    const r = state.resultados[p.id];
+    if (r===undefined) return;
+    total++;
+    const pred = (state.pronosticos[p.id]||{})[jid]||{};
+    if (pred.g1===undefined || pred.g2===undefined) return;
+    const pg1=pred.g1, pg2=pred.g2;
+    if (pg1===r.goles1 && pg2===r.goles2) { pts+=3; exactos++; resultados++; }
+    else {
+      const pw=pg1>pg2?1:pg1<pg2?2:0, rw=r.goles1>r.goles2?1:r.goles1<r.goles2?2:0;
+      if (pw===rw) { pts+=1; resultados++; }
+    }
+  });
+  return { pts, exactos, resultados };
+}
+
+function renderMarcador() {
+  const metricsEl = document.getElementById('metrics-row');
+  const listEl = document.getElementById('score-list-wrap');
+
+  if (!state.jugadores.length) {
+    metricsEl.innerHTML = '';
+    listEl.innerHTML = '<div class="empty"><i class="ti ti-trophy"></i>Agrega participantes para ver el marcador.</div>';
+    return;
+  }
+
+  const jugados = state.partidos.filter(p => state.resultados[p.id]!==undefined).length;
+  const scores = state.jugadores.map(j => ({ ...j, ...calcPuntos(j.id) })).sort((a,b) => b.pts-a.pts);
+  const lider = scores[0];
+
+  metricsEl.innerHTML = `
+    <div class="metric-card"><div class="metric-label">Participantes</div><div class="metric-value">${state.jugadores.length}</div></div>
+    <div class="metric-card"><div class="metric-label">Partidos jugados</div><div class="metric-value">${jugados}<span style="font-size:14px;color:var(--text3);font-family:'Inter';">/${state.partidos.length}</span></div></div>
+    <div class="metric-card"><div class="metric-label">Líder</div><div class="metric-value" style="font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h(lider.nombre)}</div></div>
+  `;
+
+  const medals = ['🥇','🥈','🥉'];
+  listEl.innerHTML = scores.map((s,i) => `
+    <div class="score-row ${i===0?'leader':''}">
+      <div class="rank">${medals[i] || (i+1)}</div>
+      <div class="score-name">${h(s.nombre)}</div>
+      <div class="score-detail">
+        <div>${s.exactos} exacto${s.exactos!==1?'s':''}</div>
+        <div>${s.resultados} resultado${s.resultados!==1?'s':''}</div>
+      </div>
+      <div>
+        <div class="score-pts">${s.pts}</div>
+        <div class="pts-label">puntos</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── Init ── */
+renderJugadores();
+renderPartidos();
+
+document.getElementById('nuevo-jugador').addEventListener('keydown', e => { if(e.key==='Enter') agregarJugador(); });
+document.getElementById('equipo1').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('equipo2').focus(); });
+document.getElementById('equipo2').addEventListener('keydown', e => { if(e.key==='Enter') agregarPartido(); });
+</script>
+</body>
+</html>
