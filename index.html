@@ -375,6 +375,45 @@ button.btn-success:hover { background: rgba(63,185,80,.2); }
 .rule-pts.green { color: var(--green); }
 .rule-pts.red { color: var(--red); }
 
+/* ── Grupos / Equipos ── */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.group-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.group-letter {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--gold-soft);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.group-name { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; }
+.team-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; }
+.team-flag { font-size: 16px; }
+.team-seed { font-size: 10px; color: var(--text3); margin-left: auto; }
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -396,19 +435,26 @@ button.btn-success:hover { background: rgba(63,185,80,.2); }
 <header class="header">
   <div class="logo">⚽ Mundial <span>2026</span></div>
   <div class="header-badge">USA · CAN · MEX</div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span id="live-status" style="font-size:11px;color:var(--text3);display:flex;align-items:center;"></span>
+    <button id="btn-live" onclick="toggleLive()" class="btn-success" style="font-size:11px;padding:5px 11px;">▶ Activar auto-actualización</button>
+  </div>
 </header>
 
 <div class="container">
 
   <div class="rules-strip">
-    <div class="rule-pill"><span class="rule-pts gold">+3</span> Marcador exacto</div>
-    <div class="rule-pill"><span class="rule-pts green">+1</span> Resultado correcto</div>
-    <div class="rule-pill"><span class="rule-pts red">+0</span> Resultado incorrecto</div>
+    <div class="rule-pill"><span class="rule-pts gold">+2</span> Score exacto</div>
+    <div class="rule-pill"><span class="rule-pts green">+1</span> Ganador correcto</div>
+    <div class="rule-pill"><span class="rule-pts red">+0</span> Sin acierto</div>
   </div>
 
   <nav class="tabs" role="tablist">
     <button class="tab active" onclick="showTab('jugadores', this)" role="tab">
       <i class="ti ti-users"></i><span class="label">Participantes</span>
+    </button>
+    <button class="tab" onclick="showTab('equipos', this)" role="tab">
+      <i class="ti ti-shield"></i><span class="label">Equipos</span>
     </button>
     <button class="tab" onclick="showTab('partidos', this)" role="tab">
       <i class="ti ti-ball-football"></i><span class="label">Partidos</span>
@@ -434,10 +480,20 @@ button.btn-success:hover { background: rgba(63,185,80,.2); }
     <p class="help">Agrega a todos los que van a participar. Necesitas al menos 1 para registrar pronósticos.</p>
   </div>
 
+  <!-- ══ EQUIPOS ══ -->
+  <div id="tab-equipos" class="section">
+    <div id="grupos-wrap"></div>
+  </div>
+
   <!-- ══ PARTIDOS ══ -->
   <div id="tab-partidos" class="section">
     <div class="card">
-      <div class="card-title">Nuevo partido</div>
+      <div class="card-title">Cargar fase de grupos completa</div>
+      <p class="help" style="margin:0 0 10px;">Genera automáticamente los 72 partidos de la fase de grupos (12 grupos × 6 partidos) con los 48 equipos clasificados.</p>
+      <button class="btn-primary" onclick="cargarFaseDeGrupos()"><i class="ti ti-download"></i> Generar partidos de grupos</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Nuevo partido manual</div>
       <div class="input-row">
         <input type="text" id="equipo1" placeholder="Equipo local" />
         <input type="text" id="equipo2" placeholder="Equipo visitante" />
@@ -485,6 +541,21 @@ button.btn-success:hover { background: rgba(63,185,80,.2); }
 <script>
 let state = { jugadores: [], partidos: [], pronosticos: {}, resultados: {} };
 
+const GRUPOS = {
+  A: [['México','🇲🇽'],['Sudáfrica','🇿🇦'],['Corea del Sur','🇰🇷'],['Chequia','🇨🇿']],
+  B: [['Canadá','🇨🇦'],['Qatar','🇶🇦'],['Suiza','🇨🇭'],['Bosnia','🇧🇦']],
+  C: [['Brasil','🇧🇷'],['Marruecos','🇲🇦'],['Haití','🇭🇹'],['Escocia','🏴']],
+  D: [['Estados Unidos','🇺🇸'],['Paraguay','🇵🇾'],['Australia','🇦🇺'],['Turquía','🇹🇷']],
+  E: [['Alemania','🇩🇪'],['Curazao','🇨🇼'],['Costa de Marfil','🇨🇮'],['Ecuador','🇪🇨']],
+  F: [['Países Bajos','🇳🇱'],['Japón','🇯🇵'],['Túnez','🇹🇳'],['Suecia','🇸🇪']],
+  G: [['Bélgica','🇧🇪'],['Egipto','🇪🇬'],['Irán','🇮🇷'],['Nueva Zelanda','🇳🇿']],
+  H: [['España','🇪🇸'],['Cabo Verde','🇨🇻'],['Arabia Saudita','🇸🇦'],['Uruguay','🇺🇾']],
+  I: [['Francia','🇫🇷'],['Senegal','🇸🇳'],['Noruega','🇳🇴'],['Iraq','🇮🇶']],
+  J: [['Argentina','🇦🇷'],['Argelia','🇩🇿'],['Austria','🇦🇹'],['Jordania','🇯🇴']],
+  K: [['Portugal','🇵🇹'],['Colombia','🇨🇴'],['Uzbekistán','🇺🇿'],['DR Congo','🇨🇩']],
+  L: [['Inglaterra','🏴'],['Croacia','🇭🇷'],['Ghana','🇬🇭'],['Panamá','🇵🇦']]
+};
+
 (function load() {
   try { const d = localStorage.getItem('mundial26_v2'); if (d) state = JSON.parse(d); } catch(e) {}
 })();
@@ -499,12 +570,50 @@ function h(s) {
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* ── Equipos / Grupos ── */
+function renderGrupos() {
+  const el = document.getElementById('grupos-wrap');
+  const letras = Object.keys(GRUPOS);
+  el.innerHTML = `<div class="groups-grid">` + letras.map(letra => {
+    const equipos = GRUPOS[letra];
+    return `<div class="group-card">
+      <div class="group-head">
+        <div class="group-letter">${letra}</div>
+        <div class="group-name">Grupo ${letra}</div>
+      </div>
+      ${equipos.map((eq,i) => `
+        <div class="team-row">
+          <span class="team-flag">${eq[1]}</span>
+          <span>${h(eq[0])}</span>
+          ${i===0 ? '<span class="team-seed">cabeza de serie</span>' : ''}
+        </div>`).join('')}
+    </div>`;
+  }).join('') + `</div>
+  <p class="help" style="margin-top:14px;">48 selecciones · 12 grupos de 4 equipos. Los dos primeros de cada grupo avanzan a dieciseisavos, junto con los 8 mejores terceros lugares.</p>`;
+}
+
+function cargarFaseDeGrupos() {
+  const yaHay = state.partidos.some(p => p.fase==='Fase de grupos');
+  if (yaHay && !confirm('Ya hay partidos de fase de grupos cargados. ¿Quieres agregar otra tanda de todos modos?')) return;
+  Object.keys(GRUPOS).forEach(letra => {
+    const eq = GRUPOS[letra].map(e => e[0]);
+    const pares = [[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
+    pares.forEach(([a,b]) => {
+      state.partidos.push({ id: uid(), equipo1: eq[a], equipo2: eq[b], fase: 'Fase de grupos', fecha: `Grupo ${letra}` });
+    });
+  });
+  save();
+  renderPartidos();
+  alert('Se generaron 72 partidos de la fase de grupos.');
+}
+
 /* ── Tabs ── */
 function showTab(name, btn) {
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
+  if (name==='equipos') renderGrupos();
   if (name==='pronosticos') renderPronosticos();
   if (name==='marcador') renderMarcador();
 }
@@ -591,9 +700,10 @@ function renderPartidos() {
   el.innerHTML = state.partidos.map(p => {
     const r = state.resultados[p.id];
     const done = r !== undefined;
+    const autoTag = (done && r.auto) ? `<span style="font-size:10px;color:var(--text3);margin-left:6px;border:1px solid var(--border);border-radius:10px;padding:1px 6px;">auto</span>` : '';
     const resultHtml = done
       ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span class="result-final"><i class="ti ti-check" style="font-size:13px;"></i> ${h(p.equipo1)} ${r.goles1} — ${r.goles2} ${h(p.equipo2)}</span>
+          <span class="result-final"><i class="ti ti-check" style="font-size:13px;"></i> ${h(p.equipo1)} ${r.goles1} — ${r.goles2} ${h(p.equipo2)}</span>${autoTag}
           <button class="btn-danger" onclick="editarResultado('${p.id}')" style="font-size:11px;padding:4px 9px;">editar</button>
          </div>`
       : `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;">
@@ -651,12 +761,12 @@ function renderPronosticos() {
       if (r !== undefined && g1 !== '' && g2 !== '') {
         const pg1=parseInt(g1), pg2=parseInt(g2);
         if (pg1===r.goles1 && pg2===r.goles2) {
-          badge = '<span class="badge badge-exact">+3 exacto</span>';
+          badge = '<span class="badge badge-exact">+2 exacto</span>';
         } else {
           const pw = pg1>pg2?1:pg1<pg2?2:0;
           const rw = r.goles1>r.goles2?1:r.goles1<r.goles2?2:0;
           badge = pw===rw
-            ? '<span class="badge badge-result">+1 resultado</span>'
+            ? '<span class="badge badge-result">+1 ganador</span>'
             : '<span class="badge badge-miss">+0</span>';
         }
       }
@@ -697,7 +807,7 @@ function calcPuntos(jid) {
     const pred = (state.pronosticos[p.id]||{})[jid]||{};
     if (pred.g1===undefined || pred.g2===undefined) return;
     const pg1=pred.g1, pg2=pred.g2;
-    if (pg1===r.goles1 && pg2===r.goles2) { pts+=3; exactos++; resultados++; }
+    if (pg1===r.goles1 && pg2===r.goles2) { pts+=2; exactos++; resultados++; }
     else {
       const pw=pg1>pg2?1:pg1<pg2?2:0, rw=r.goles1>r.goles2?1:r.goles1<r.goles2?2:0;
       if (pw===rw) { pts+=1; resultados++; }
@@ -742,6 +852,106 @@ function renderMarcador() {
     </div>`).join('');
 }
 
+/* ── Live scores ── */
+const API = 'https://worldcup26.ir';
+let apiToken = null;
+let liveTimer = null;
+let liveActive = false;
+
+// Map our team names → API name_en values
+const TEAM_MAP = {
+  'México':'Mexico','Sudáfrica':'South Africa','Corea del Sur':'South Korea','Chequia':'Czech Republic',
+  'Canadá':'Canada','Qatar':'Qatar','Suiza':'Switzerland','Bosnia':'Bosnia and Herzegovina',
+  'Brasil':'Brazil','Marruecos':'Morocco','Haití':'Haiti','Escocia':'Scotland',
+  'Estados Unidos':'United States','Paraguay':'Paraguay','Australia':'Australia','Turquía':'Turkey',
+  'Alemania':'Germany','Curazao':'Curaçao','Costa de Marfil':'Ivory Coast','Ecuador':'Ecuador',
+  'Países Bajos':'Netherlands','Japón':'Japan','Túnez':'Tunisia','Suecia':'Sweden',
+  'Bélgica':'Belgium','Egipto':'Egypt','Irán':'Iran','Nueva Zelanda':'New Zealand',
+  'España':'Spain','Cabo Verde':'Cape Verde','Arabia Saudita':'Saudi Arabia','Uruguay':'Uruguay',
+  'Francia':'France','Senegal':'Senegal','Noruega':'Norway','Iraq':'Iraq',
+  'Argentina':'Argentina','Argelia':'Algeria','Austria':'Austria','Jordania':'Jordan',
+  'Portugal':'Portugal','Colombia':'Colombia','Uzbekistán':'Uzbekistan','DR Congo':'DR Congo',
+  'Inglaterra':'England','Croacia':'Croatia','Ghana':'Ghana','Panamá':'Panama'
+};
+
+function setLiveStatus(status, msg) {
+  const el = document.getElementById('live-status');
+  if (!el) return;
+  const colors = { ok:'var(--green)', error:'var(--red)', loading:'var(--gold)', off:'var(--text3)' };
+  el.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${colors[status]||colors.off};margin-right:6px;"></span>${msg}`;
+}
+
+async function getApiToken() {
+  try {
+    const r = await fetch(`${API}/auth/authenticate`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email:'demo@mundial2026.app', password:'Mundial2026!' })
+    });
+    const d = await r.json();
+    return d.token || null;
+  } catch { return null; }
+}
+
+async function fetchLiveScores() {
+  setLiveStatus('loading', 'Actualizando...');
+  try {
+    if (!apiToken) {
+      apiToken = await getApiToken();
+      if (!apiToken) { setLiveStatus('error', 'Sin conexión a la API'); return; }
+    }
+    const r = await fetch(`${API}/get/games`, { headers:{ Authorization:`Bearer ${apiToken}` } });
+    if (r.status === 401) { apiToken = null; setLiveStatus('error', 'Token expirado, reintentando...'); return; }
+    const games = await r.json();
+    if (!Array.isArray(games)) { setLiveStatus('error', 'Respuesta inesperada'); return; }
+
+    let updated = 0;
+    state.partidos.forEach(p => {
+      const en1 = TEAM_MAP[p.equipo1] || p.equipo1;
+      const en2 = TEAM_MAP[p.equipo2] || p.equipo2;
+      const match = games.find(g => {
+        const hn = (g.home_team_name_en||'').toLowerCase();
+        const an = (g.away_team_name_en||'').toLowerCase();
+        return (hn.includes(en1.toLowerCase()) && an.includes(en2.toLowerCase())) ||
+               (hn.includes(en2.toLowerCase()) && an.includes(en1.toLowerCase()));
+      });
+      if (!match || !match.finished) return;
+      let g1 = parseInt(match.home_score)||0;
+      let g2 = parseInt(match.away_score)||0;
+      // swap if teams are reversed
+      const hn = (match.home_team_name_en||'').toLowerCase();
+      const en1l = en1.toLowerCase();
+      if (!hn.includes(en1l)) { [g1,g2]=[g2,g1]; }
+      const prev = state.resultados[p.id];
+      if (!prev || prev.goles1!==g1 || prev.goles2!==g2) {
+        state.resultados[p.id] = { goles1:g1, goles2:g2, auto:true };
+        updated++;
+      }
+    });
+
+    if (updated > 0) { save(); renderPartidos(); if(document.getElementById('tab-marcador').classList.contains('active')) renderMarcador(); }
+    const now = new Date().toLocaleTimeString('es', {hour:'2-digit',minute:'2-digit'});
+    setLiveStatus('ok', `En vivo · actualizado ${now}`);
+  } catch(e) {
+    setLiveStatus('error', 'Error de red');
+  }
+}
+
+function toggleLive() {
+  liveActive = !liveActive;
+  const btn = document.getElementById('btn-live');
+  if (liveActive) {
+    btn.textContent = '⏸ Pausar auto-actualización';
+    btn.className = 'btn-danger';
+    fetchLiveScores();
+    liveTimer = setInterval(fetchLiveScores, 60000);
+  } else {
+    clearInterval(liveTimer);
+    btn.textContent = '▶ Activar auto-actualización';
+    btn.className = 'btn-success';
+    setLiveStatus('off', 'Auto-actualización pausada');
+  }
+}
+
 /* ── Init ── */
 renderJugadores();
 renderPartidos();
@@ -749,6 +959,9 @@ renderPartidos();
 document.getElementById('nuevo-jugador').addEventListener('keydown', e => { if(e.key==='Enter') agregarJugador(); });
 document.getElementById('equipo1').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('equipo2').focus(); });
 document.getElementById('equipo2').addEventListener('keydown', e => { if(e.key==='Enter') agregarPartido(); });
+
+// Auto-start live updates
+setTimeout(() => { liveActive=false; toggleLive(); }, 1500);
 </script>
 </body>
 </html>
